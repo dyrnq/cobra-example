@@ -30,6 +30,8 @@ make run
 
 SERVER_ADDRESS=0.0.0.0 ./main serve
 
+SERVER_ADDRESS=0.0.0.0 SERVER_PORT=7777 ./main serve --config ./config-demo.yaml
+
 SERVER_ADDRESS=0.0.0.0 ./main serve --server.address 127.0.0.1 --server.port=8899
 
 
