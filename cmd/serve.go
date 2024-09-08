@@ -42,7 +42,8 @@ to quickly create a Cobra application.`,
 
 		go func() {
 			if err := srv.ListenAndServe(); err != nil {
-				log.Println("Server error:", err)
+				//log.Println("Server error:", err)
+				log.Fatal("Server error:", err) // 使用 log.Fatal 处理错误并退出
 			}
 		}()
 	
