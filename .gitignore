@@ -1,0 +1,6 @@
+.vagrant/
+*.log
+ext
+main
+build.sh
+dist
