@@ -9,7 +9,11 @@ import (
 
 	"github.com/spf13/cobra"
 	"github.com/spf13/viper"
-	"net/http"	
+	"net/http"
+	"log"
+	"os"
+	"os/signal"
+	"syscall"
 )
 
 // serveCmd represents the serve command
@@ -29,12 +33,28 @@ to quickly create a Cobra application.`,
 		http.HandleFunc("/healthz", healthzHandler)
 		http.HandleFunc("/", defaultHandler)
 		info := fmt.Sprintf("%s:%d", ConfigVar.Server.Address, ConfigVar.Server.Port)
-		fmt.Println(info)
-		err := http.ListenAndServe(info, nil)
-		if err != nil {
-			fmt.Println("Failed to start server:", err)
-		}
+		// fmt.Println(info)
+		// err := http.ListenAndServe(info, nil)
+		// if err != nil {
+		// 	fmt.Println("Failed to start server:", err)
+		// }
+		srv := &http.Server{Addr: info, Handler: nil}
 
+		go func() {
+			if err := srv.ListenAndServe(); err != nil {
+				log.Println("Server error:", err)
+			}
+		}()
+	
+		log.Println("Server is starting on", srv.Addr)
+	
+		// 等待系统信号
+		sigs := make(chan os.Signal, 1)
+		signal.Notify(sigs, syscall.SIGINT, syscall.SIGTERM)
+		<-sigs
+	
+		log.Println("Shutting down server...")
+		srv.Close() // 优雅关闭服务器
 
 	},
 }
