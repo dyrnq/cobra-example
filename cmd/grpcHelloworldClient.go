@@ -19,8 +19,8 @@ import (
 
 )
 
-// clientCmd represents the client command
-var clientCmd = &cobra.Command{
+// grpcHelloworldClientCmd represents the client command
+var grpcHelloworldClientCmd = &cobra.Command{
 	Use:   "client",
 	Short: "A brief description of your command",
 	Long: `A longer description that spans multiple lines and likely contains examples
@@ -54,21 +54,21 @@ to quickly create a Cobra application.`,
 }
 
 func init() {
-	grpcHelloworldCmd.AddCommand(clientCmd)
+	grpcHelloworldCmd.AddCommand(grpcHelloworldClientCmd)
 
 	// Here you will define your flags and configuration settings.
 
 	// Cobra supports Persistent Flags which will work for this command
 	// and all subcommands, e.g.:
-	// clientCmd.PersistentFlags().String("foo", "", "A help for foo")
+	// grpcHelloworldClientCmd.PersistentFlags().String("foo", "", "A help for foo")
 
 	// Cobra supports local flags which will only run when this command
 	// is called directly, e.g.:
-	// clientCmd.Flags().BoolP("toggle", "t", false, "Help message for toggle")
+	// grpcHelloworldClientCmd.Flags().BoolP("toggle", "t", false, "Help message for toggle")
 
-	clientCmd.Flags().StringP("grpc.server", "", "127.0.0.1:50051", "Server address")
-	clientCmd.Flags().StringP("msg", "", "hello", "")
+	grpcHelloworldClientCmd.Flags().StringP("grpc.server", "", "127.0.0.1:50051", "Server address")
+	grpcHelloworldClientCmd.Flags().StringP("msg", "", "hello", "")
 	
-	viper.BindPFlags(clientCmd.Flags())
+	viper.BindPFlags(grpcHelloworldClientCmd.Flags())
 
 }
