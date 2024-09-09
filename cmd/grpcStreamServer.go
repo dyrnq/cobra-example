@@ -111,6 +111,10 @@ to quickly create a Cobra application.`,
 		}
 
 	},
+	PreRun: func(cmd *cobra.Command, args []string) {
+		viper.BindPFlag("grpc.address", cmd.Flags().Lookup("grpc.address"))
+		viper.BindPFlag("grpc.port", cmd.Flags().Lookup("grpc.port"))
+   },
 }
 
 func init() {
@@ -130,7 +134,7 @@ func init() {
 	grpcStreamServerCmd.Flags().IntP("grpc.port", "", 50053, "Server port")
 
 	// 在不同的子命令中使用相同的参数名称确实会导致 Viper 混淆。这是因为 Viper 使用参数名称作为键来存储和读取配置值。
-	viper.BindPFlags(grpcStreamServerCmd.Flags())
+	//viper.BindPFlags(grpcStreamServerCmd.Flags())
 
 
 

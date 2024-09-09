@@ -51,6 +51,10 @@ to quickly create a Cobra application.`,
 
 
 	},
+	PreRun: func(cmd *cobra.Command, args []string) {
+		viper.BindPFlag("grpc.server", cmd.Flags().Lookup("grpc.server"))
+		viper.BindPFlag("msg", cmd.Flags().Lookup("msg"))
+   },
 }
 
 func init() {
@@ -69,6 +73,6 @@ func init() {
 	grpcHelloworldClientCmd.Flags().StringP("grpc.server", "", "127.0.0.1:50051", "Server address")
 	grpcHelloworldClientCmd.Flags().StringP("msg", "", "hello", "")
 	
-	viper.BindPFlags(grpcHelloworldClientCmd.Flags())
+	// viper.BindPFlags(grpcHelloworldClientCmd.Flags())
 
 }

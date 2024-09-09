@@ -111,6 +111,9 @@ to quickly create a Cobra application.`,
 
 
 	},
+	PreRun: func(cmd *cobra.Command, args []string) {
+		viper.BindPFlag("grpc.server", cmd.Flags().Lookup("grpc.server"))
+   },
 }
 
 func init() {
@@ -127,5 +130,5 @@ func init() {
 	// grpcStreamClientCmd.Flags().BoolP("toggle", "t", false, "Help message for toggle")
 	grpcStreamClientCmd.Flags().StringP("grpc.server", "", "127.0.0.1:50053", "Server address")
 	
-	viper.BindPFlags(grpcStreamClientCmd.Flags())
+	// viper.BindPFlags(grpcStreamClientCmd.Flags())
 }
