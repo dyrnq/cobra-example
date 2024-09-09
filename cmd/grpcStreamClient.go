@@ -7,7 +7,7 @@ package cmd
 import (
 	"context"
 	"fmt"
-	"io"
+	// "io"
 	"log"
 	"time"
 	"math/big"
@@ -97,13 +97,15 @@ to quickly create a Cobra application.`,
 	
 			// 接收服务端的响应
 			for {
-				resp, err := stream.Recv()
-				log.Printf("Received message from server: %s", resp.Total)
-				if err == io.EOF {
-					log.Printf("Received message from server: %s", resp.Total)
-				}
+				resp, err := stream.Recv()				
+				// if err == io.EOF {
+				// 	log.Printf("Received message from server: %v", resp.Total)
+				// }
 				if err != nil {
 					log.Printf("Failed to send message: %v", err)
+				}
+				if resp != nil {
+					log.Printf("Received message from server: %v", resp.Total)
 				}
 			}
 

@@ -10,7 +10,7 @@ import (
 
 	"log"
 	"net"
-	"io"
+	// "io"
 	"google.golang.org/grpc"
 	pb "github.com/dyrnq/cobra-example/pkg/grpc/stream"
 	"github.com/spf13/cobra"
@@ -43,16 +43,16 @@ type streamServer struct{
 // 	}
 // }
 
-
+var total int32
 func (s streamServer) Channel(stream pb.StreamService_ChannelServer) error {
-	var total int32
+	//var total int32
  
 	for {
 		port, err := stream.Recv()
-
-		if err == io.EOF {
-			return stream.Send(&pb.Response{Total: total,});
-		}
+		stream.Send(&pb.Response{Total: total,});
+		// if err == io.EOF {
+		// 	return stream.Send(&pb.Response{Total: total,});
+		// }
 		if err != nil {
 			return err
 		}
