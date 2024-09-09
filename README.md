@@ -124,3 +124,19 @@ cobra-cli add client --parent grpcHelloworldCmd --viper
 
 ./main grpc-helloworld client --grpc.server 127.0.0.1:50051 --msg 你好
 ```
+
+
+## grpc-stream
+
+- <https://github.com/pramonow/go-grpc-server-streaming-example>
+
+```bash
+cobra-cli add grpc-stream           --parent rootCmd        --viper
+cobra-cli add grpc-stream-server    --parent grpcStreamCmd  --viper
+cobra-cli add grpc-stream-client    --parent grpcStreamCmd  --viper
+
+
+./main grpc-stream server
+
+./main grpc-stream client
+```
