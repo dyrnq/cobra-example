@@ -12,6 +12,7 @@ import (
 	"time"
 	"math/big"
 	"google.golang.org/grpc"
+	"runtime"
 	pb "github.com/dyrnq/cobra-example/pkg/grpc/stream"
 	"github.com/spf13/cobra"
 	"github.com/spf13/viper"
@@ -30,9 +31,12 @@ This application is a tool to generate the needed files
 to quickly create a Cobra application.`,
 	Run: func(cmd *cobra.Command, args []string) {
 		//fmt.Println("grpcStreamClient called")
+		for {
 		conn, err := grpc.NewClient(viper.GetString("grpc.server"), grpc.WithTransportCredentials(insecure.NewCredentials()))
 		if err != nil {
 			log.Fatalf("did not connect: %v", err)
+			time.Sleep(1 * time.Second)
+			continue
 		}
 		defer conn.Close()
 
@@ -45,7 +49,9 @@ to quickly create a Cobra application.`,
 		
 		stream, err := c.Channel(ctx)
 		if err != nil {
-			log.Printf("create stream: %w", err)
+			log.Printf("create stream: %v", err)
+			time.Sleep(1 * time.Second)
+			continue
 		}
 
 
@@ -85,6 +91,7 @@ to quickly create a Cobra application.`,
 					if err != nil {
 						log.Printf("Failed to send message: %v", err)
 						//return
+						runtime.Goexit() // 立即终止当前协程
 					}
 					time.Sleep(1 * time.Second)
 				}
@@ -97,19 +104,20 @@ to quickly create a Cobra application.`,
 	
 			// 接收服务端的响应
 			for {
-				resp, err := stream.Recv()				
+				resp, err := stream.Recv()
 				// if err == io.EOF {
 				// 	log.Printf("Received message from server: %v", resp.Total)
 				// }
 				if err != nil {
 					log.Printf("Failed to send message: %v", err)
+					break;
 				}
 				if resp != nil {
 					log.Printf("Received message from server: %v", resp.Total)
 				}
 			}
 
-
+		}
 	},
 	PreRun: func(cmd *cobra.Command, args []string) {
 		viper.BindPFlag("grpc.server", cmd.Flags().Lookup("grpc.server"))
