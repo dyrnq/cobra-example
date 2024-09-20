@@ -7,6 +7,9 @@ package cmd
 import (
 	"context"
 	"fmt"
+	"crypto/tls"
+	"crypto/x509"
+	"os"	
 	// "io"
 	"log"
 	"time"
@@ -16,6 +19,7 @@ import (
 	pb "github.com/dyrnq/cobra-example/pkg/grpc/stream"
 	"github.com/spf13/cobra"
 	"github.com/spf13/viper"
+	"google.golang.org/grpc/credentials"
 	"google.golang.org/grpc/credentials/insecure"
 )
 
@@ -31,8 +35,51 @@ This application is a tool to generate the needed files
 to quickly create a Cobra application.`,
 	Run: func(cmd *cobra.Command, args []string) {
 		//fmt.Println("grpcStreamClient called")
+
+        certFile := viper.GetString("grpc.tls.cert")
+        keyFile := viper.GetString("grpc.tls.key")
+        caFile := viper.GetString("grpc.tls.ca") // 新增：读取CA证书路径
+		var conn *grpc.ClientConn
+		var err error
 		for {
-		conn, err := grpc.NewClient(viper.GetString("grpc.server"), grpc.WithTransportCredentials(insecure.NewCredentials()))
+
+
+			if certFile!= "" && keyFile!= "" && caFile!= "" {
+                cert, err := tls.LoadX509KeyPair(certFile, keyFile)
+                if err!= nil {
+                        log.Fatalf("Failed to load TLS certificate and key: %v", err)
+                }
+
+                // 创建TLS配置
+                tlsConfig := &tls.Config{
+                        Certificates: []tls.Certificate{cert},
+                        // 使用CA证书进行验证
+                        RootCAs:    x509.NewCertPool(),
+                        InsecureSkipVerify: false, 
+                }
+
+                caCert, err := os.ReadFile(caFile)
+                if err!= nil {
+                        log.Fatalf("Failed to load CA certificate: %v", err)
+                }
+
+                if ok := tlsConfig.RootCAs.AppendCertsFromPEM(caCert);!ok {
+                        log.Fatalf("Failed to append CA certificate")
+                }
+
+                // 使用TLS配置创建gRPC连接
+                conn, err = grpc.Dial(viper.GetString("grpc.server"), grpc.WithTransportCredentials(credentials.NewTLS(tlsConfig)))
+
+        } else {
+                // 如果没有提供TLS证书和密钥，则使用不安全的连接
+                conn, err = grpc.Dial(viper.GetString("grpc.server"), grpc.WithTransportCredentials(insecure.NewCredentials()))
+
+        }
+
+		//conn, err := grpc.NewClient(viper.GetString("grpc.server"), grpc.WithTransportCredentials(insecure.NewCredentials()))
+
+
+
 		if err != nil {
 			log.Fatalf("did not connect: %v", err)
 			time.Sleep(1 * time.Second)
@@ -121,6 +168,9 @@ to quickly create a Cobra application.`,
 	},
 	PreRun: func(cmd *cobra.Command, args []string) {
 		viper.BindPFlag("grpc.server", cmd.Flags().Lookup("grpc.server"))
+		viper.BindPFlag("grpc.tls.cert", cmd.Flags().Lookup("grpc.tls.cert"))
+		viper.BindPFlag("grpc.tls.key", cmd.Flags().Lookup("grpc.tls.key"))
+		viper.BindPFlag("grpc.tls.ca", cmd.Flags().Lookup("grpc.tls.ca"))	
    },
 }
 
@@ -137,6 +187,9 @@ func init() {
 	// is called directly, e.g.:
 	// grpcStreamClientCmd.Flags().BoolP("toggle", "t", false, "Help message for toggle")
 	grpcStreamClientCmd.Flags().StringP("grpc.server", "", "127.0.0.1:50053", "Server address")
-	
+	grpcStreamClientCmd.Flags().StringP("grpc.tls.cert", "", "", "grpc.tls.cert")
+	grpcStreamClientCmd.Flags().StringP("grpc.tls.key", "", "", "grpc.tls.key")
+	grpcStreamClientCmd.Flags().StringP("grpc.tls.ca", "", "", "grpc.tls.ca")
+
 	// viper.BindPFlags(grpcStreamClientCmd.Flags())
 }
