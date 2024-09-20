@@ -119,7 +119,9 @@ to quickly create a Cobra application.`,
 				log.Fatalf("failed to load TLS certificate and key: %v", err)
 			}
 
+			// 启用ALPN协商
 			tlsConfig := &tls.Config{
+				NextProtos: []string{"h2"}, // 这里指定支持的ALPN协议，例如HTTP/2
 				Certificates: []tls.Certificate{cert},
 				// 根据命令行参数决定是否需要客户端认证
 				ClientAuth: tls.NoClientCert,
