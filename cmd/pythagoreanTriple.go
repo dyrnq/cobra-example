@@ -39,7 +39,7 @@ func impl1(max int){
 				fmt.Printf("%d^2 + %d^2 = %d^2\n", a, b, c )
 				count++
 			}
-			if count >= 100 {
+			if count >= max {
 				return
 			}
 		}
