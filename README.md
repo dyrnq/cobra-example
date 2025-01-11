@@ -61,12 +61,10 @@ pkg/grpc/helloworld/*.proto
 > bash: protoc: command not found
 
 ```bash
-
-PROTOC_VER=28.0
 # https://github.com/protocolbuffers/protobuf/releases/download/v28.0/protoc-28.0-linux-x86_64.zip
-
-[ "$(uname -m)" = "x86_64" ] && arch="x86_64";
-[ "$(uname -m)" = "aarch64" ] && arch="aarch_64";
+PROTOC_VER=28.0
+if [ "$(uname -m)" = "x86_64" ]; then arch="amd64"; fi
+if [ "$(uname -m)" = "aarch64" ]; then arch="arm64"; fi
 PROTOC_ZIP="protoc-${PROTOC_VER}-linux-${arch}.zip"
 url="https://github.com/protocolbuffers/protobuf/releases/download/v${PROTOC_VER}/${PROTOC_ZIP}";
 url=${url/github.com/mirror.ghproxy.com/github.com}
